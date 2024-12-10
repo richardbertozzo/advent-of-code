@@ -8,6 +8,11 @@ import (
 	"github.com/richardbertozzo/adventofcode-2024/file"
 )
 
+var (
+	XMAS = map[int]rune{1: 'M', 2: 'A', 3: 'S'}
+	MAS  = map[int]rune{1: 'A', 2: 'S'}
+)
+
 func countXmasWords(matrix [][]rune) int {
 	total := 0
 
@@ -35,22 +40,22 @@ func countXmasWords(matrix [][]rune) int {
 				}
 
 				// diagonal down left
-				if diagonalDownLeft(matrix, i, y) {
+				if checkDiagonal(XMAS, matrix, i, y, 1, -1) {
 					total++
 				}
 
 				// diagonal down right
-				if diagonalDownRight(matrix, i, y) {
+				if checkDiagonal(XMAS, matrix, i, y, 1, 1) {
 					total++
 				}
 
 				// diagonal up right
-				if diagonalUpRight(matrix, i, y) {
+				if checkDiagonal(XMAS, matrix, i, y, -1, 1) {
 					total++
 				}
 
 				// diagonal up left
-				if diagonalUpLeft(matrix, i, y) {
+				if checkDiagonal(XMAS, matrix, i, y, -1, -1) {
 					total++
 				}
 			}
@@ -91,35 +96,35 @@ func masX(matrix [][]rune, lineIdx, columnIdx int) bool {
 	}
 
 	// down right
-	downRight := checkDiagonal(matrix, lineIdx, columnIdx, 1, 1)
+	downRight := checkDiagonal(MAS, matrix, lineIdx, columnIdx, 1, 1)
 	if downRight {
-		downLeft := checkDiagonal(matrix, lineIdx, columnIdx+2, 1, -1)
-		upRight := checkDiagonal(matrix, lineIdx+2, columnIdx, -1, 1)
+		downLeft := checkDiagonal(MAS, matrix, lineIdx, columnIdx+2, 1, -1)
+		upRight := checkDiagonal(MAS, matrix, lineIdx+2, columnIdx, -1, 1)
 		return downLeft || upRight
 	}
 
 	// up left
-	upLeft := checkDiagonal(matrix, lineIdx, columnIdx, -1, -1)
+	upLeft := checkDiagonal(MAS, matrix, lineIdx, columnIdx, -1, -1)
 	if upLeft {
-		upRight := checkDiagonal(matrix, lineIdx, columnIdx-2, -1, 1)
-		downLeft := checkDiagonal(matrix, lineIdx-2, columnIdx, 1, -1)
+		upRight := checkDiagonal(MAS, matrix, lineIdx, columnIdx-2, -1, 1)
+		downLeft := checkDiagonal(MAS, matrix, lineIdx-2, columnIdx, 1, -1)
 		return upRight || downLeft
 	}
 
 	return false
 }
 
-func checkDiagonal(matrix [][]rune, lineIdx, columnIdx, rowStep, colStep int) bool {
+func checkDiagonal(steps map[int]rune, matrix [][]rune, lineIdx, columnIdx, rowStep, colStep int) bool {
 	// Check if the movement stays within bounds
-	for step := 1; step <= 2; step++ {
+	for step := 1; step <= len(steps); step++ {
 		newRow := lineIdx + step*rowStep
 		newCol := columnIdx + step*colStep
 		if newRow < 0 || newRow >= len(matrix) || newCol < 0 || newCol >= len(matrix[lineIdx]) {
 			return false
 		}
 
-		// Match the pattern 'A', 'S' in respective steps
-		expected := map[int]rune{1: 'A', 2: 'S'}[step]
+		// Match the pattern 'M', 'A', 'S' in respective steps
+		expected := steps[step]
 		if matrix[newRow][newCol] != expected {
 			return false
 		}
@@ -129,7 +134,7 @@ func checkDiagonal(matrix [][]rune, lineIdx, columnIdx, rowStep, colStep int) bo
 }
 
 func horizontal(line []rune, idx int) bool {
-	if idx+3 > len(line)-1 {
+	if idx+3 >= len(line) {
 		return false
 	}
 
@@ -186,70 +191,6 @@ func verticalBackwards(matrix [][]rune, lineIdx, columnIdx int) bool {
 	} else if matrix[lineIdx-2][columnIdx] != 'A' {
 		return false
 	} else if matrix[lineIdx-3][columnIdx] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func diagonalDownRight(matrix [][]rune, lineIdx, columnIdx int) bool {
-	if lineIdx+3 > len(matrix)-1 || columnIdx+3 > len(matrix[lineIdx])-1 {
-		return false
-	}
-
-	if matrix[lineIdx+1][columnIdx+1] != 'M' {
-		return false
-	} else if matrix[lineIdx+2][columnIdx+2] != 'A' {
-		return false
-	} else if matrix[lineIdx+3][columnIdx+3] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func diagonalUpRight(matrix [][]rune, lineIdx, columnIdx int) bool {
-	if lineIdx-3 < 0 || columnIdx+3 > len(matrix[lineIdx])-1 {
-		return false
-	}
-
-	if matrix[lineIdx-1][columnIdx+1] != 'M' {
-		return false
-	} else if matrix[lineIdx-2][columnIdx+2] != 'A' {
-		return false
-	} else if matrix[lineIdx-3][columnIdx+3] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func diagonalUpLeft(matrix [][]rune, lineIdx, columnIdx int) bool {
-	if lineIdx-3 < 0 || columnIdx-3 < 0 {
-		return false
-	}
-
-	if matrix[lineIdx-1][columnIdx-1] != 'M' {
-		return false
-	} else if matrix[lineIdx-2][columnIdx-2] != 'A' {
-		return false
-	} else if matrix[lineIdx-3][columnIdx-3] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func diagonalDownLeft(matrix [][]rune, lineIdx, columnIdx int) bool {
-	if lineIdx+3 > len(matrix)-1 || columnIdx-3 < 0 {
-		return false
-	}
-
-	if matrix[lineIdx+1][columnIdx-1] != 'M' {
-		return false
-	} else if matrix[lineIdx+2][columnIdx-2] != 'A' {
-		return false
-	} else if matrix[lineIdx+3][columnIdx-3] != 'S' {
 		return false
 	}
 
