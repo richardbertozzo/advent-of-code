@@ -20,42 +20,42 @@ func countXmasWords(matrix [][]rune) int {
 		for y, element := range line {
 			if element == 'X' {
 				// horizontal
-				if horizontal(line, y) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, 0, 1) {
 					total++
 				}
 
 				// horizontal backwards
-				if horizontalBackwards(line, y) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, 0, -1) {
 					total++
 				}
 
 				// vertical
-				if vertical(matrix, i, y) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, 1, 0) {
 					total++
 				}
 
 				// vertical backwards
-				if verticalBackwards(matrix, i, y) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, -1, 0) {
 					total++
 				}
 
 				// diagonal down left
-				if checkDiagonal(XMAS, matrix, i, y, 1, -1) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, 1, -1) {
 					total++
 				}
 
 				// diagonal down right
-				if checkDiagonal(XMAS, matrix, i, y, 1, 1) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, 1, 1) {
 					total++
 				}
 
 				// diagonal up right
-				if checkDiagonal(XMAS, matrix, i, y, -1, 1) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, -1, 1) {
 					total++
 				}
 
 				// diagonal up left
-				if checkDiagonal(XMAS, matrix, i, y, -1, -1) {
+				if matchesPatternInDirection(XMAS, matrix, i, y, -1, -1) {
 					total++
 				}
 			}
@@ -96,25 +96,25 @@ func masX(matrix [][]rune, lineIdx, columnIdx int) bool {
 	}
 
 	// down right
-	downRight := checkDiagonal(MAS, matrix, lineIdx, columnIdx, 1, 1)
+	downRight := matchesPatternInDirection(MAS, matrix, lineIdx, columnIdx, 1, 1)
 	if downRight {
-		downLeft := checkDiagonal(MAS, matrix, lineIdx, columnIdx+2, 1, -1)
-		upRight := checkDiagonal(MAS, matrix, lineIdx+2, columnIdx, -1, 1)
+		downLeft := matchesPatternInDirection(MAS, matrix, lineIdx, columnIdx+2, 1, -1)
+		upRight := matchesPatternInDirection(MAS, matrix, lineIdx+2, columnIdx, -1, 1)
 		return downLeft || upRight
 	}
 
 	// up left
-	upLeft := checkDiagonal(MAS, matrix, lineIdx, columnIdx, -1, -1)
+	upLeft := matchesPatternInDirection(MAS, matrix, lineIdx, columnIdx, -1, -1)
 	if upLeft {
-		upRight := checkDiagonal(MAS, matrix, lineIdx, columnIdx-2, -1, 1)
-		downLeft := checkDiagonal(MAS, matrix, lineIdx-2, columnIdx, 1, -1)
+		upRight := matchesPatternInDirection(MAS, matrix, lineIdx, columnIdx-2, -1, 1)
+		downLeft := matchesPatternInDirection(MAS, matrix, lineIdx-2, columnIdx, 1, -1)
 		return upRight || downLeft
 	}
 
 	return false
 }
 
-func checkDiagonal(steps map[int]rune, matrix [][]rune, lineIdx, columnIdx, rowStep, colStep int) bool {
+func matchesPatternInDirection(steps map[int]rune, matrix [][]rune, lineIdx, columnIdx, rowStep, colStep int) bool {
 	// Check if the movement stays within bounds
 	for step := 1; step <= len(steps); step++ {
 		newRow := lineIdx + step*rowStep
@@ -128,70 +128,6 @@ func checkDiagonal(steps map[int]rune, matrix [][]rune, lineIdx, columnIdx, rowS
 		if matrix[newRow][newCol] != expected {
 			return false
 		}
-	}
-
-	return true
-}
-
-func horizontal(line []rune, idx int) bool {
-	if idx+3 >= len(line) {
-		return false
-	}
-
-	if line[idx+1] != 'M' {
-		return false
-	} else if line[idx+2] != 'A' {
-		return false
-	} else if line[idx+3] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func horizontalBackwards(line []rune, idx int) bool {
-	if idx-3 < 0 {
-		return false
-	}
-
-	if line[idx-1] != 'M' {
-		return false
-	} else if line[idx-2] != 'A' {
-		return false
-	} else if line[idx-3] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func vertical(matrix [][]rune, lineIdx, columnIdx int) bool {
-	if lineIdx+3 > len(matrix) {
-		return false
-	}
-
-	if matrix[lineIdx+1][columnIdx] != 'M' {
-		return false
-	} else if matrix[lineIdx+2][columnIdx] != 'A' {
-		return false
-	} else if matrix[lineIdx+3][columnIdx] != 'S' {
-		return false
-	}
-
-	return true
-}
-
-func verticalBackwards(matrix [][]rune, lineIdx, columnIdx int) bool {
-	if lineIdx-3 < 0 {
-		return false
-	}
-
-	if matrix[lineIdx-1][columnIdx] != 'M' {
-		return false
-	} else if matrix[lineIdx-2][columnIdx] != 'A' {
-		return false
-	} else if matrix[lineIdx-3][columnIdx] != 'S' {
-		return false
 	}
 
 	return true
