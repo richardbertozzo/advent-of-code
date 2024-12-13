@@ -33,6 +33,9 @@ func main() {
 
 	total := sumMiddlePageNumberValidRows(inputsRows, rules)
 	log.Println("total", total)
+
+	totalInvalid := sumMiddlePageNumberInvalidRows(inputsRows, rules)
+	log.Println("total invalid", totalInvalid)
 }
 
 func sumMiddlePageNumberValidRows(rows [][]int, rules map[int][]int) int {
@@ -45,6 +48,37 @@ func sumMiddlePageNumberValidRows(rows [][]int, rules map[int][]int) int {
 
 	return total
 
+}
+
+func sumMiddlePageNumberInvalidRows(rows [][]int, rules map[int][]int) int {
+	total := 0
+
+	for _, row := range rows {
+		if !isValidRow(row, rules) {
+			row = bubbleSort(row, rules)
+			total += row[getMiddlePageNumber(row)]
+		}
+	}
+
+	return total
+}
+
+func bubbleSort(row []int, rules map[int][]int) []int {
+	isDone := false
+	for !isDone {
+		isDone = true
+		i := 0
+
+		for i < len(row)-1 {
+			if !slices.Contains(rules[row[i]], row[i+1]) {
+				row[i], row[i+1] = row[i+1], row[i]
+				isDone = false
+			}
+			i++
+		}
+	}
+
+	return row
 }
 
 func isValidRow(row []int, rules map[int][]int) bool {
